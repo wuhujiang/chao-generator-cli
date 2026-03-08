@@ -1,37 +1,59 @@
-// Inquirer v13 使用单独的导入
-import select from '@inquirer/select';
-import confirm from '@inquirer/confirm';
+import inquirer from 'inquirer';
+
+/**
+ * @param {string} message 询问提示语句
+ * @returns  {Object} 根据name属性获取用户输入的值{confirm: true/false}
+ */
+export const inquirerConfirm = async (message) => { 
+  const answer = await inquirer.prompt({
+    type: "confirm",
+    name: "confirm",
+    message,
+  });
+  return answer;
+}
 
 /**
  * 
- * @param { string } message 
- * @returns 
+ * @param {string} message 询问提示语句
+ * @param {Array} choices 选择列表，默认读取对象的name属性
+ * @param {string} type 默认列表类型
+ * @returns {Object} 根据name属性获取用户输入的值{choose: xxxxxx}
  */
-export const inquirerConfirm = async (message) => {
-  const answer = await confirm({
-    message: message,
+export const inquirerChoose = async (message, choices, type = 'select') => { 
+  const answer = await inquirer.prompt({
+    type,
+    name: "choose",
+    message,
+    choices,
   });
-  return { confirm: answer };
+  return answer;
 }
 
-export const inquirerChoose = async (message, choices) => {
-  // 确保 choices 是一个数组
-  if (!Array.isArray(choices)) {
-    console.error('Error: choices must be an array');
-    return { choose: '' };
-  }
-  
-  // 为 Inquirer v13 格式化 choices
-  const formattedChoices = choices.map(item => ({
-    name: item.name,
-    value: item.value,
-    description: item.desc
-  }));
-  
-  const answer = await select({
-    message: message,
-    choices: formattedChoices
+/**
+ * @param {string} message 询问提示的值
+ * @returns {Object} 根据name属性获取用户输入的值{input: xxxxxx}
+ */
+export const inquirerInput = async (message) => { 
+  const answer = await inquirer.prompt({
+    type: "input",
+    name: "input",
+    message,
   });
-  
-  return { choose: answer };
+  return answer;
+}
+
+/**
+ * @param {Array} messages  询问提示语句数组
+ * @returns {Object} 结果对象
+ */
+export const inquirerInputs = async (messages) => { 
+  const answers = await inquirer.prompt(messages.map(msg => { 
+    return {
+      name: msg.name,
+      type: "input",
+      message: msg.message,
+    }
+  }));
+  return answers
 }

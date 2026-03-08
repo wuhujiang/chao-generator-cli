@@ -21,9 +21,8 @@
     "fs-extra": "^11.3.4",
     "ora": "^9.3.0",
     "shelljs": "^0.10.0",
-    "table": "^6.9.0"
-  },
-  "devDependencies": {
+    "table": "^6.9.0",
     "inquirer": "^13.3.0"
-  }
+  },
+  "devDependencies": {}
 }

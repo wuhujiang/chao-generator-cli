@@ -4,8 +4,8 @@ import clone from './gitClone.js'
 import logSymbols from './logSymbols.js'
 import  fs  from 'fs-extra'
 import { removeDir } from './utils.js';
-import {inquirerConfirm,inquirerChoose} from './interactive.js'
-import { templates } from './constants.js';
+import {inquirerConfirm,inquirerChoose,inquirerInputs} from './interactive.js'
+import { templates,messages } from './constants.js';
 export const initAction = async (name,option) => {
   if(!shell.which('git')){
     console.log( logSymbols.error + " "+'请先安装git')
@@ -53,12 +53,17 @@ export const initAction = async (name,option) => {
     console.log( logSymbols.warning + " "+'项目名已存在，将强制覆盖')
     // await removeDir(name)
   }
-  try {
-    await clone(repository,name)
-  } catch (error) {
-    console.log(logSymbols.error,chalk.redBright('对不起，项目创建失败'))
-    console.log(error)
-    shell.exit(1)
+  // try {
+  //   await clone(repository,name)
+  // } catch (error) {
+  //   console.log(logSymbols.error,chalk.redBright('对不起，项目创建失败'))
+  //   console.log(error)
+  //   shell.exit(1)
+  // }
+  if(!option.ignore){
+    // 输入提问
+    const answer = await inquirerInputs(messages)
+    console.log(answer)
   }
   // await clone('cmdparkour/vue-admin-box', 'vue-admin-box')
   // clone(option.template, name)

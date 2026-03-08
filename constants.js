@@ -15,3 +15,28 @@ export const templates = [
     desc:"基于vite3自定义初始化Vue3项目模板+前端工具链模板"
   }
 ]
+
+export const messages = [
+  {
+    message:'请输入项目名称',
+    name:'name',
+    validate: (value) => {
+      if(value.match(/[\u4E00-\u9FFF`~!@#$%^&*()::<>?]/g)){
+        return '项目关键词不能包含特殊字符'
+      }
+      return true
+    }
+  },
+  {
+    message:'请输入项目关键词',
+    name:'keyword',
+  },
+  {
+    message:'请输入项目描述',
+    name:'description'
+  },
+  {
+    message:'请输入项目作者',
+    name:'author'
+  },  
+]
