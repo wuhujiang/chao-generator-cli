@@ -28,7 +28,7 @@ export const messages = [
     }
   },
   {
-    message:'请输入项目关键词',
+    message:'请输入项目关键词(,分割)',
     name:'keyword',
   },
   {
