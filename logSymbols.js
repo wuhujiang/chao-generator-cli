@@ -1,4 +1,4 @@
-import { isUnicodeSupported } from './utils.js'
+import { isUnicodeSupported } from './isUnicodeSupported.js'
 import chalk from 'chalk';
 
 const main = {

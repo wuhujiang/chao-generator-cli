@@ -53,6 +53,7 @@ export const inquirerInputs = async (messages) => {
       name: msg.name,
       type: "input",
       message: msg.message,
+      validate: msg.validate,
     }
   }));
   return answers

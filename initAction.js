@@ -29,7 +29,6 @@ export const initAction = async (name,option) => {
   }
   else{
     const answer = await inquirerChoose(`请选择项目模板`,templates)
-    console.log(answer)
     repository = answer.choose
   }
 
@@ -40,8 +39,6 @@ export const initAction = async (name,option) => {
     console.log(logSymbols.warning,`已存在项目文件夹${chalk.yellowBright(name)}`)
     // 询问是否删除文件夹
     const answer =await inquirerConfirm(`是否删除文件夹${chalk.yellowBright(name)}`)
-    console.log(answer)
-
     if(answer.confirm){
       await removeDir(name)
     }else{
@@ -51,7 +48,7 @@ export const initAction = async (name,option) => {
   }
   else if(fs.existsSync(name) && option.force){
     console.log( logSymbols.warning + " "+'项目名已存在，将强制覆盖')
-    // await removeDir(name)
+    await removeDir(name)
   }
   try {
     await clone(repository,name)
@@ -63,7 +60,6 @@ export const initAction = async (name,option) => {
   if(!option.ignore){
     // 输入提问
     const answers = await inquirerInputs(messages)
-    console.log(answers)
     await changePackageJson(name,answers)  
   }
   // 安装依赖

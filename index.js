@@ -1,5 +1,4 @@
 #! /usr/bin/env node
-import clone from './gitClone.js'
 import figlet from 'figlet'
 import chalk  from 'chalk'
 import { program } from 'commander'
