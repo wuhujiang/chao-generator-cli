@@ -12,10 +12,13 @@ chao-generator-cli/
 ├── initAction.js             # create 命令核心逻辑
 ├── interactive.js            # 交互式问答封装（确认、选择、输入）
 ├── constants.js              # 模板列表与交互提示配置
-├── gitClone.js               # Git 仓库克隆（基于 download-git-repo）
+├── gitClone.js               # Git 仓库克隆（基于 child_process.execFile）
 ├── utils.js                  # 工具函数（目录删除、package.json 修改、依赖安装）
 ├── logSymbols.js             # 终端符号（根据终端能力选择 Unicode/ASCII）
 ├── isUnicodeSupported.js     # Unicode 支持检测
+├── build/
+│   ├── release.js            # 跨平台发布脚本（Node.js 实现）
+│   └── release.sh            # 旧版发布脚本（已弃用）
 ├── package.json              # 项目配置
 └── .gitignore
 ```
@@ -33,13 +36,13 @@ chao-generator-cli/
 
 `create` 命令的完整执行流程：
 
-1. **环境检查** — 验证系统是否安装了 Git
-2. **项目名校验** — 禁止中文和特殊字符
+1. **环境检查** — 通过 `execFileSync` 验证系统是否安装了 Git
+2. **项目名校验** — 白名单机制，只允许 `[a-zA-Z0-9_][a-zA-Z0-9_\-.]` 格式，防止命令注入
 3. **模板选择** — 通过 `-t` 参数指定或交互式选择
 4. **目录冲突处理**
    - 无 `--force`：提示用户确认是否删除已存在的同名目录
    - 有 `--force`：直接删除已存在的同名目录
-5. **克隆模板** — 从 GitHub 下载指定模板仓库
+5. **克隆模板** — 通过 `git clone --depth=1` 浅克隆 GitHub 仓库，克隆后自动删除 `.git` 目录
 6. **项目信息收集**（可通过 `-i` 跳过）— 收集项目名称、关键词、描述、作者
 7. **修改 package.json** — 将用户输入的信息写入克隆下来的模板
 8. **安装依赖** — 自动执行 `npm install`
@@ -62,7 +65,12 @@ chao-generator-cli/
 
 ### gitClone.js - 仓库克隆
 
-封装 `download-git-repo`，返回 Promise，配合 `ora` 显示下载进度动画。
+使用 Node.js 原生 `child_process.execFile` 调用 `git clone --depth=1`，特点：
+
+- **安全**：`execFile` 不经过 shell，从根本上杜绝命令注入
+- **高效**：`--depth=1` 浅克隆，只拉取最新一次提交
+- **超时保护**：默认 60 秒超时，网络异常时自动终止并提示
+- **清理历史**：克隆后自动删除 `.git` 目录，项目从零开始
 
 ### utils.js - 工具函数
 
@@ -70,11 +78,19 @@ chao-generator-cli/
 |------|------|
 | `removeDir(dir)` | 删除指定目录，带 loading 动画 |
 | `changePackageJson(name, info)` | 读取并修改克隆项目的 `package.json`（名称、关键词、描述、作者） |
-| `npmInstall(dir)` | 在指定目录执行 `npm install --force` 安装依赖 |
+| `npmInstall(dir)` | 在指定目录通过 `execFileSync` 执行 `npm install` 安装依赖 |
 
 ### logSymbols.js / isUnicodeSupported.js - 终端符号
 
-根据终端是否支持 Unicode，选择对应的符号集（`✔` / `√`、`✖` / `×` 等），用于美化终端输出。
+根据终端是否支持 Unicode，选择对应的符号集（`✔` / `√`、`✖` / `×`、`★` / `*` 等），用于美化终端输出。
+
+### build/release.js - 跨平台发布脚本
+
+纯 Node.js 实现的发布脚本，替代旧的 `release.sh`，特点：
+
+- **跨平台**：Windows / macOS / Linux 均可运行
+- **版本号校验**：只接受 `x.y.z` 或 `x.y.z-prerelease` 格式
+- **安全执行**：使用 `execFileSync` 调用 git/npm 命令
 
 ## 依赖说明
 
@@ -82,13 +98,17 @@ chao-generator-cli/
 |------|------|------|
 | commander | ^14.0.3 | 命令行参数解析与命令注册 |
 | inquirer | ^13.3.0 | 交互式命令行问答 |
-| download-git-repo | ^3.0.2 | 从 GitHub 下载仓库 |
 | chalk | ^5.6.2 | 终端文本着色 |
 | ora | ^9.3.0 | 终端 loading 动画 |
-| shelljs | ^0.10.0 | 跨平台 Shell 命令执行 |
 | fs-extra | ^11.3.4 | 增强版文件系统操作 |
 | table | ^6.9.0 | 终端表格渲染 |
-| figlet | ^1.10.0 | ASCII 艺术字（保留，当前未启用） |
+
+## 安全设计
+
+- **无 shell 执行**：所有外部命令通过 `child_process.execFile` 调用，不经过 shell 解释器
+- **白名单校验**：项目名只允许安全字符 `[a-zA-Z0-9_-.]`
+- **零已知漏洞**：移除了存在安全问题的 `download-git-repo`、`shelljs` 依赖
+- **超时保护**：git clone 操作设有 60 秒超时
 
 ## 扩展指南
 

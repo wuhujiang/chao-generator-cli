@@ -6,15 +6,17 @@
 
 - 交互式选择项目模板
 - 通过命令行参数直接指定模板
-- 自动克隆远程 GitHub 仓库
+- 自动克隆远程 GitHub 仓库（浅克隆，自动清理 `.git` 历史）
 - 自定义项目信息（名称、关键词、描述、作者）并写入 `package.json`
 - 自动安装项目依赖
 - 同名目录冲突检测与处理
 - 查看所有可用模板列表
+- 项目名安全校验（白名单机制，防止命令注入）
+- Git clone 超时保护（60 秒）
 
 ## 环境要求
 
-- Node.js >= 20
+- Node.js >= 18
 - Git
 
 ## 安装
@@ -74,6 +76,7 @@ chao-cli create --help
 | webpack-template | yingside/webpack-template | 基于 webpack5 自定义初始化 Vue3 项目模板 |
 | vue-admin-box | cmdparkour/vue-admin-box | 基于 vue3 的 admin-box 模板 |
 | vite-template | yingside/vite-template | 基于 vite3 自定义初始化 Vue3 项目模板 + 前端工具链模板 |
+| vite-templates | wuhujiang/vue3-template | 基于 vite3 自定义初始化 Vue3 项目模板 |
 
 ## 命令参数
 
@@ -85,14 +88,30 @@ chao-cli create --help
 | `-f, --force` | 强制覆盖已存在的同名目录 |
 | `-i, --ignore` | 跳过项目信息录入，直接使用模板默认配置 |
 
+## 项目名规则
+
+项目名只能包含字母、数字、下划线、中划线和点号，且不能以点号或中划线开头。
+
+## 发布
+
+```bash
+npm run release
+```
+
+跨平台支持，Windows / macOS / Linux 均可直接运行。发布脚本会：
+
+1. 提示输入版本号并校验格式（x.y.z）
+2. 自动提交未保存的更改
+3. 更新 `package.json` 版本号
+4. 推送代码和 tag 到远程仓库
+5. 发布到 npm
+
 ## 技术栈
 
 - [Commander.js](https://github.com/tj/commander.js) - 命令行参数解析
 - [Inquirer.js](https://github.com/SBoudrias/Inquirer.js) - 交互式命令行
-- [download-git-repo](https://github.com/flipxfx/download-git-repo) - GitHub 仓库下载
 - [chalk](https://github.com/chalk/chalk) - 终端文本样式
 - [ora](https://github.com/sindresorhus/ora) - 终端 loading 动画
-- [shelljs](https://github.com/shelljs/shelljs) - Shell 命令执行
 - [fs-extra](https://github.com/jprichardson/node-fs-extra) - 文件系统操作增强
 - [table](https://github.com/gajus/table) - 终端表格输出
 
