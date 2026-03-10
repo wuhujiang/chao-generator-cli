@@ -94,13 +94,15 @@ chao-cli create --help
 
 ## 发布
 
+需在 Git Bash 中执行：
+
 ```bash
 npm run release
 ```
 
-跨平台支持，Windows / macOS / Linux 均可直接运行。发布脚本会：
+发布脚本会：
 
-1. 提示输入版本号并校验格式（x.y.z）
+1. 提示输入版本号
 2. 自动提交未保存的更改
 3. 更新 `package.json` 版本号
 4. 推送代码和 tag 到远程仓库

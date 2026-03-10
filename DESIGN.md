@@ -17,8 +17,7 @@ chao-generator-cli/
 ├── logSymbols.js             # 终端符号（根据终端能力选择 Unicode/ASCII）
 ├── isUnicodeSupported.js     # Unicode 支持检测
 ├── build/
-│   ├── release.js            # 跨平台发布脚本（Node.js 实现）
-│   └── release.sh            # 旧版发布脚本（已弃用）
+│   └── release.sh            # 发布脚本（Bash）
 ├── package.json              # 项目配置
 └── .gitignore
 ```
@@ -84,13 +83,15 @@ chao-generator-cli/
 
 根据终端是否支持 Unicode，选择对应的符号集（`✔` / `√`、`✖` / `×`、`★` / `*` 等），用于美化终端输出。
 
-### build/release.js - 跨平台发布脚本
+### build/release.sh - 发布脚本
 
-纯 Node.js 实现的发布脚本，替代旧的 `release.sh`，特点：
+Bash 脚本，用于版本发布，需在 Git Bash 中运行。流程：
 
-- **跨平台**：Windows / macOS / Linux 均可运行
-- **版本号校验**：只接受 `x.y.z` 或 `x.y.z-prerelease` 格式
-- **安全执行**：使用 `execFileSync` 调用 git/npm 命令
+1. 提示输入版本号并确认
+2. 检查工作目录是否有未提交更改，如有则自动提交
+3. 通过 `npm version` 更新版本号
+4. 推送代码和 tag 到远程仓库
+5. 执行 `npm publish` 发布
 
 ## 依赖说明
 
