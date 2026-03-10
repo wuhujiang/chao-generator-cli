@@ -13,6 +13,11 @@ export const templates = [
     name:"vite-template",
     value:"yingside/vite-template",
     desc:"基于vite3自定义初始化Vue3项目模板+前端工具链模板"
+  },
+  {
+    name:"vite-templates",
+    value:"wuhujiang/vue3-template",
+    desc:"基于vite3自定义初始化Vue3项目模板"
   }
 ]
 
